@@ -13,7 +13,15 @@ send_webhook() {
     local logs
     logs=$(cat "$LOG_FILE")
 
-    eval "${WEBHOOK_COMMAND:-curl -sf -X POST \"\${WEBHOOK_URL}\" -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"$status\\\",\\\"logs\\\":\\\"\$(printf '%s' \"\$logs\" | sed 's/\\/\\\\/g; s/\"/\\\\\"/g; s/\t/\\\\t/g; s/\n/\\\\n/g')\\\"}\"}" || true
+    if [[ -n "${WEBHOOK_COMMAND:-}" ]]; then
+        eval "$WEBHOOK_COMMAND" || true
+    else
+        local escaped_logs
+        escaped_logs=$(printf '%s' "$logs" | sed 's/\\/\\\\/g; s/"/\\"/g; s/\t/\\t/g; s/\n/\\n/g')
+        curl -sf -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"status\":\"$status\",\"logs\":\"$escaped_logs\"}" || true
+    fi
 }
 
 on_error() {
