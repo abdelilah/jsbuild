@@ -40,9 +40,9 @@ if [[ -n "${BUNDLE_URL:-}" ]]; then
         unzip -q "$ARCHIVE" -d /build
         extracted=true
     elif echo "$BUNDLE_URL" | grep -qE '\.gz$'; then
-        gunzip -k "$ARCHIVE"
-        local_file="${ARCHIVE%.gz}"
-        mv "$local_file" /build/
+        cp "$ARCHIVE" "${ARCHIVE}.gz"
+        gunzip "${ARCHIVE}.gz"
+        mv "$ARCHIVE" /build/
         extracted=true
     fi
 

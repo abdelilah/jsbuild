@@ -1,0 +1,12 @@
+FROM bats/bats:1.11.0
+
+RUN apk add --no-cache \
+    docker-cli \
+    docker-cli-buildx \
+    python3 \
+    tar \
+    gzip \
+    zip \
+    netcat-openbsd
+
+WORKDIR /code
